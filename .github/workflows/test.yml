@@ -24,7 +24,8 @@ jobs:
       run: ls -al
     - name: Clean-up
       run: |
-        rm -rf ./generated/
+        rm -rf ./generated/notion
+        rm -rf ./generated/gh-pages
     - name: List files after clean-up 
       run: ls -al
     - name: Get notion export file
