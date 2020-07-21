@@ -9,6 +9,8 @@ async function run() {
     const notionSpaceId = core.getInput('notion_space_id');
     core.info(`notionCookie ${notionCookie} | notionSpaceId ${notionSpaceId}`);
 
+    core.setOutput('url', 'default');
+
     fetch("https://www.notion.so/api/v3/enqueueTask",  {
       method: 'POST',
       body: '{"task":{"eventName":"exportSpace","request":{"spaceId":"5c94e789-31b9-4416-aeb8-b7d1607432aa","exportOptions":{"exportType":"markdown","timeZone":"Europe/Brussels","locale":"en"}}}}',
