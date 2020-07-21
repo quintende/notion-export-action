@@ -29,6 +29,8 @@ jobs:
         notion_cookie: ${{ secrets.NOTION_COOKIE }}
         notion_space_id: ${{ secrets.NOTION_SPACE_ID }}
     - name: Download notion export file
-      run: echo "${{ steps.notion_export.outputs.notion_url }}"
+      run: > 
+        echo "Downloading ${{ steps.notion_export.outputs.notion_url }}"
+        /usr/bin/curl -o master.zip ${{ steps.notion_export.outputs.notion_url }}
     - name: List files after download 
       run: ls -al
