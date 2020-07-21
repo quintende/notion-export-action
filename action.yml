@@ -10,6 +10,7 @@ inputs:
 outputs:
   url: # output will be available to future steps
     description: 'Download url of asset export'
+    default: "config"
 runs:
   using: 'node12'
   main: 'dist/index.js'
