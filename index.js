@@ -9,7 +9,6 @@ async function run() {
     const notionSpaceId = core.getInput('notion_space_id');
     core.info(`notionCookie ${notionCookie} | notionSpaceId ${notionSpaceId}`);
 
-    core.setOutput('url', 'default');
 
     fetch("https://www.notion.so/api/v3/enqueueTask",  {
       method: 'POST',
@@ -42,8 +41,9 @@ async function run() {
                 core.setFailed(`fetch failed with status: ${response.status}`);
             })
             .then(data => {
-                console.log(`2: successfully saved data ${JSON.stringify(data)} ${data.results[0].status.exportURL}`);
-                core.setOutput('url', data.results[0].status.exportURL);
+                console.log(`2: successfully saved data ${data.results[0].status.exportURL}`);
+                core.setOutput('notion_url', data.results[0].status.exportURL);
+                console.log('gettingOutput', core.setOutput('notion_url'));
             })
             .catch(error => core.setFailed(error.message));
           }, 10000);
@@ -56,4 +56,5 @@ async function run() {
   }
 }
 
+core.setOutput('notion_url', 'default');
 run();

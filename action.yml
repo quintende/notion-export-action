@@ -8,9 +8,8 @@ inputs:
     description: 'Your notion space ID'
     required: true
 outputs:
-  url: # output will be available to future steps
+  notion_url:
     description: 'Download url of asset export'
-    default: "config"
 runs:
   using: 'node12'
   main: 'dist/index.js'
