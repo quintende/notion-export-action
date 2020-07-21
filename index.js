@@ -43,7 +43,7 @@ async function run() {
                 console.log(`2: successfully saved data ${JSON.stringify(data)} ${data.results[0].status.exportURL}`);
             })
             .catch(error => core.setFailed(error.message));
-          }, 5000);
+          }, 10000);
 
       })
       .catch(error => core.setFailed(error.message));
