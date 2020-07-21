@@ -1,3 +1,0 @@
-# JavaScript
-
-[Coding Conventions](JavaScript%20f17175cafdf84cf6a0cdba74d70cef61/Coding%20Conventions%20a9a901be51ab4cf29f0cb9ea120dbd62.md)
