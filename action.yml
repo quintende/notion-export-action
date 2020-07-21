@@ -7,6 +7,10 @@ inputs:
   notion_space_id: 
     description: 'Your notion space ID'
     required: true
+  notion_export_type:
+    description: 'Notion Export type'
+    required: true
+    default: 'markdown'
 outputs:
   notion_url:
     description: 'Download url of asset export'
