@@ -8,6 +8,8 @@ async function run() {
     const notionCookie = core.getInput('notion_cookie');
     const notionSpaceId = core.getInput('notion_space_id');
     const notionExportType = core.getInput('notion_export_type');
+  
+    core.info(`notionExportType ${notionExportType} | notionCookie ${notionCookie} | notionSpaceId ${notionSpaceId}`);
 
     fetch("https://www.notion.so/api/v3/enqueueTask",  {
       method: 'POST',
