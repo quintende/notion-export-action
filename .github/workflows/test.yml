@@ -20,7 +20,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: ./
+    - name: List files on start-up 
+      run: ls -al
+    - name: Get notion export file
+      id: notion_export
+      uses: ./
       with:
         notion_cookie: ${{ secrets.NOTION_COOKIE }}
         notion_space_id: ${{ secrets.NOTION_SPACE_ID }}
+    - name: Download notion export file
+      run: >
+        echo "Downloading ${steps.notion_export.outputs.url}"
+        /usr/bin/curl -o master.zip ${steps.notion_export.outputs.url}
+    - name: List files after download 
+      run: ls -al
