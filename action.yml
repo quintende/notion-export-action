@@ -1,13 +1,8 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
-inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
-    required: true
-    default: '1000'
+name: 'Notion backup'
+description: 'Push notion.so asset export to github'
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  url: # output will be available to future steps
+    description: 'Download url of asset export'
 runs:
   using: 'node12'
   main: 'dist/index.js'
