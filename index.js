@@ -43,7 +43,6 @@ async function run() {
             .then(data => {
                 console.log(`2: successfully saved data ${data.results[0].status.exportURL}`);
                 core.setOutput('notion_url', data.results[0].status.exportURL);
-                console.log('gettingOutput', core.getOutput('notion_url'));
             })
             .catch(error => core.setFailed(error.message));
           }, 10000);
