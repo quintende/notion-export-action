@@ -45,8 +45,8 @@ jobs:
     - name: 'Download the Notion files'
       run: | 
         echo "Downloading markdown url ${{ steps.notion_export_markdown.outputs.notion_url }}"
-        echo "Downloading markdown html ${{ steps.notion_export_markdown.outputs.notion_url }}"
-        /usr/bin/curl -o markdown.zip "${{ steps.notion_export_html.outputs.notion_url }}"
+        echo "Downloading markdown html ${{ steps.notion_export_html.outputs.notion_url }}"
+        /usr/bin/curl -o markdown.zip "${{ steps.notion_export_markdown.outputs.notion_url }}"
         /usr/bin/curl -o html.zip "${{ steps.notion_export_html.outputs.notion_url }}"
     - name: 'Unzip Notion archive files'
       run: |
