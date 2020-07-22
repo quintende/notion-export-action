@@ -1,67 +1,67 @@
-name: "Test action"
+name: "Notion export workflow example"
 on:
   pull_request:
   push:
     branches:
       - main
-      - 'releases/*'
 
 jobs:
-  # unit tests
-  # units:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - run: npm ci
-  #   - run: npm test
-
-  # test action works running from the graph
-  use-action:
+  example:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: List files on start-up 
+    - name: 'List files on start-up' 
       run: ls -al
-    - name: Clean-up
+    - name: 'Files on start-up'
       run: |
         rm -rf ./generated/notion
         rm -rf ./generated/gh-pages
-    - name: List files after clean-up 
+    - name: 'Files after clean-up' 
       run: ls -al
-    - name: Get notion export markdown files
+      # 
+      # Example of the Notion export action
+      # params / inputs:
+      # - notion_cookie: Personalized cookie that is used by the Notion API
+      # - notion_space_id: ID of your private / public space you want to export
+      # - notion_export_type: exportType API param | uses 'markdown' as default
+      #
+      # exports:
+      # - notion_url: URL of the exported files | can be called by other steps with:
+      #   steps.<id>.outputs.notion_url -> steps.notion_export_markdown.outputs.notion_url
+    - name: 'Get Notion export Markdown files URL'
       id: notion_export_markdown
       uses: ./
       with:
         notion_cookie: ${{ secrets.NOTION_COOKIE }}
         notion_space_id: ${{ secrets.NOTION_SPACE_ID }}
         notion_export_type: 'markdown'
-    - name: Get notion export html files
+    - name: 'Get Notion export HTML files URL'
       id: notion_export_html
       uses: ./
       with:
         notion_cookie: ${{ secrets.NOTION_COOKIE }}
         notion_space_id: ${{ secrets.NOTION_SPACE_ID }}
         notion_export_type: 'html'
-    - name: Download exported notion files
+    - name: 'Download the Notion files'
       run: | 
         echo "Downloading markdown url ${{ steps.notion_export_markdown.outputs.notion_url }}"
         echo "Downloading markdown html ${{ steps.notion_export_markdown.outputs.notion_url }}"
         /usr/bin/curl -o markdown.zip "${{ steps.notion_export_html.outputs.notion_url }}"
         /usr/bin/curl -o html.zip "${{ steps.notion_export_html.outputs.notion_url }}"
-    - name: Unzipping notion archive files
+    - name: 'Unzip Notion archive files'
       run: |
         unzip markdown.zip -d ./generated/notion
         unzip html.zip -d ./generated/gh-pages
-    - name: List files after download & extract 
+    - name: 'Files after download'
       run: ls -al
-    - name: Deploy to notion branch
+    - name: 'Deploy Markdown files to "notion" branch'
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
         BRANCH: notion
         FOLDER: generated/notion
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Deploy to gh-pages branch
+    - name: 'Deploy HTML files to "gh-pages" branch'
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
