@@ -4,7 +4,7 @@ Welcome to Notion!
 
 Here are the basics:
 
-- [ ]  Click anywhere and just start typing
+- [x]  Click anywhere and just start typing
 - [ ]  Hit `/` to see all the types of content you can add - headers, videos, sub pages, etc.
 
     [Example sub page](Getting%20Started%20ff354c22558046e9a3feea236f60532f/Example%20sub%20page%20dba66a561e324eeba9ffbab198f24363.md)
