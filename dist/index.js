@@ -67,68 +67,75 @@ module.exports = require("os");
 /***/ 104:
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-const core = __webpack_require__(470);
-const fetch = __webpack_require__(454);
 const fs = __webpack_require__(747);
 const path = __webpack_require__(622);
+const fetch = __webpack_require__(454);
+const core = __webpack_require__(470);
 
-async function run() {
-  try {
-    const notionCookie = core.getInput('notion_cookie');
-    const notionSpaceId = core.getInput('notion_space_id');
-    const notionExportType = core.getInput('notion_export_type');
-  
-    core.info(`notionExportType ${notionExportType} | notionCookie ${notionCookie} | notionSpaceId ${notionSpaceId}`);
+/* Helpers */
+const asyncTimeout = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
 
-    fetch("https://www.notion.so/api/v3/enqueueTask",  {
-      method: 'POST',
-      body: `{"task":{"eventName":"exportSpace","request":{"spaceId":"${notionSpaceId}","exportOptions":{"exportType":"${notionExportType}","timeZone":"Europe/Brussels","locale":"en"}}}}`,
-		  headers: {
-        'Content-Type': 'application/json',
-        //'Cookie': '__cfduid=d2ead3fcda3e9dfcfe246197b71be77d41593268635; notion_browser_id=ddcc63c9-7af3-4b2e-a3cd-9e41b842ed9a; notion_locale=en-US%2Flegacy; token_v2=a58d29141d98a6cd7dd06b25775eb5b25c7ad7bc640ab9b410b7f801111ee28624ef3dd23ddd1c10a8052c7565eb41860c70785b721d5d89b03aed9f787446f8a39ba7d72830a59dbc38cf0c2a36; notion_user_id=40b44116-408c-472e-aca6-16a0847c5654; notion_users=%5B%2240b44116-408c-472e-aca6-16a0847c5654%22%5D'
-        'Cookie': notionCookie
-        }
-      })
-      .then(response => {
-          if(response.ok){
-              return response.json();
-          }
-          core.setFailed(`fetch failed with status: ${response.status}`);
-      })
-      .then(data => {
-          console.log(`successfully saved data ${JSON.stringify(data)}`);
-          setTimeout(() => {
-            fetch("https://www.notion.so/api/v3/getTasks",  {
-              method: 'POST',
-              body: `{"taskIds":["${data.taskId}"]}`,
-              headers: {
-                'Content-Type': 'application/json',
-                //'Cookie': '__cfduid=d2ead3fcda3e9dfcfe246197b71be77d41593268635; notion_browser_id=ddcc63c9-7af3-4b2e-a3cd-9e41b842ed9a; notion_locale=en-US%2Flegacy; token_v2=a58d29141d98a6cd7dd06b25775eb5b25c7ad7bc640ab9b410b7f801111ee28624ef3dd23ddd1c10a8052c7565eb41860c70785b721d5d89b03aed9f787446f8a39ba7d72830a59dbc38cf0c2a36; notion_user_id=40b44116-408c-472e-aca6-16a0847c5654; notion_users=%5B%2240b44116-408c-472e-aca6-16a0847c5654%22%5D'
-                'Cookie': notionCookie
-                }
-              }).then(response => {
-                if(response.ok){
-                    return response.json();
-                }
-                core.setFailed(`fetch failed with status: ${response.status}`);
-            })
-            .then(data => {
-                console.log(`2: successfully saved data ${data.results[0].status.exportURL}`);
-                core.setOutput('notion_url', data.results[0].status.exportURL);
-            })
-            .catch(error => core.setFailed(error.message));
-          }, 10000);
+const getResponseData = response => {
+    if (response.ok) return response.json();
 
-      })
-      .catch(error => core.setFailed(error.message));
-    
-  } catch (error) {
-    core.setFailed(error.message);
-  }
+    core.setFailed(`fetch failed with status: ${response.status}`);
 }
 
-core.setOutput('notion_url', 'default');
-run();
+/* Action */
+(async () => {
+    try {
+        /* Inputs */
+        const notionCookie = core.getInput('notion_cookie');
+        const notionSpaceId = core.getInput('notion_space_id');
+        const notionExportType = core.getInput('notion_export_type');
+
+        core.info(`notionExportType ${notionExportType} | notionCookie ${notionCookie} | notionSpaceId ${notionSpaceId}`);
+
+        /* enqueueTask */
+        const enqueueTaskRequest = {
+            url: 'https://www.notion.so/api/v3/enqueueTask',
+            options: {
+                method: 'POST',
+                body: `{"task":{"eventName":"exportSpace","request":{"spaceId":"${notionSpaceId}","exportOptions":{"exportType":"${notionExportType}","timeZone":"Europe/Brussels","locale":"en"}}}}`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cookie': notionCookie
+                }
+            }
+        };
+
+        const enqueueTaskResponse = await fetch(enqueueTaskRequest.url, enqueueTaskRequest.options);
+        const enqueueTask = await getResponseData(enqueueTaskResponse);
+        const { taskId } = enqueueTask;
+        core.info(`taskId ${taskId}`);
+
+        /* Wait */
+        await asyncTimeout(10000);
+
+        /* getTask */
+        const getTasksRequest = {
+            url: 'https://www.notion.so/api/v3/getTasks',
+            options: {
+                method: 'POST',
+                body: `{"taskIds":["${taskId}"]}`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cookie': notionCookie
+                }
+            }
+        };
+
+        const getTasksResponse = await fetch(getTasksRequest.url, getTasksRequest.options);
+        const getTasks = await getResponseData(getTasksResponse);
+        const { exportURL } = getTasks.results[0].status;
+        core.info(`exportURL ${exportURL}`);
+
+        core.setOutput('notion_url', exportURL);
+    } catch (error) {
+        core.setFailed(error.message);
+    }
+})();
+
 
 /***/ }),
 
